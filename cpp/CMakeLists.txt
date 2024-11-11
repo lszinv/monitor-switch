@@ -22,6 +22,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Enable static linking
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(
   include
@@ -29,16 +30,14 @@ include_directories(
 )
 
 set(SOURCES
-  src/battery.cpp
+  src/ConfigManager.cpp
+  src/DisplayDevice.cpp
+  src/DisplayDeviceManager.cpp
   src/main.cpp
-  src/setup_api.cpp
-  src/vcp.cpp
-  src/handle_info.cpp
-  src/display_device.cpp
 )
 
 # Add executable
-add_executable(MonitorVCPFeatures src/main.cpp)
+add_executable(MonitorVCPFeatures ${SOURCES})
 
 # Link required Windows libraries
 target_link_libraries(MonitorVCPFeatures
