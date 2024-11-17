@@ -1,28 +1,29 @@
 #pragma once
+#include <map>
 #include <string>
 #include <windows.h>
-#include <map>
+#include <iostream>
 
 namespace MonitorSwitch {
-class DisplayDevice {
-public:
-  DisplayDevice();
+  class DisplayDevice {
+  public:
+    DisplayDevice(HMONITOR monitor, std::wstring device_name);
 
-  void setPhysicalMonitor(HANDLE);
-  void setDisplayMonitor(HMONITOR);
-  void setName(std::wstring);
-  void setDeviceString(std::wstring);
-  void setDeviceId(std::wstring);
-  void setInputs(std::map<int, std::wstring>&&);
-  void setCurrentInput(std::pair<int, std::wstring>);
+    HMONITOR monitor_handle;
+    std::wstring device_name;
+    std::wstring name;
+    std::wstring device_string;
+    std::wstring device_id;
+    std::wstring device_key;
 
-private:
-  HANDLE physical_monitor;
-  HMONITOR display_monitor;
-  std::wstring name;
-  std::wstring device_string;
-  std::wstring device_id;
-  std::map<int /* Code */, std::wstring /* Input Label  */> inputs;
-  std::pair<int /* Code */, std::wstring /* Input Label */> current_input;
-};
-}
+    void SetInputs(std::map<int, std::wstring> &&);
+    void SetCurrentInput(std::pair<int, std::wstring>);
+
+  private:
+    std::map<int /* Code */, std::wstring /* Input Label  */> inputs;
+    std::pair<int /* Code */, std::wstring /* Input Label */> current_input;
+    void GetMonitorDetails();
+  };
+
+  std::wostream& operator<<(std::wostream& os, const MonitorSwitch::DisplayDevice& dd);
+} // namespace MonitorSwitch
