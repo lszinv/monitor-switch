@@ -10,7 +10,6 @@ DisplayDeviceManager::DisplayDeviceManager() { return; };
 
 void DisplayDeviceManager::Scan() {
   EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, 0);
-  std::cout << "??" << std::endl;
   return;
 }
 
