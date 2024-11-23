@@ -1,11 +1,14 @@
 ﻿cmake_minimum_required(VERSION 3.10)
 
 # Set up cross-compilation
+set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
+
+set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}-gcc-posix)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++-posix)
+set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
+
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
-set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
-set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
-set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 
 # Set paths
 set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
@@ -18,6 +21,9 @@ project(MonitorVCPFeatures)
 # Specify C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set Properties
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Enable static linking
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")

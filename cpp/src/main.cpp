@@ -19,6 +19,13 @@ using namespace rapidjson;
 
 int main(int argc, char *argv[]) {
   spdlog::info("App Started");
+  spdlog::info("===EnumerateDisplayDevices");
+  EnumerateDisplayDevices(); // display_device
+  spdlog::info("===GetMonitorInfo()");
+  GetMonitorInfo();          // setup_api
+  spdlog::info("GetMonitordeviceIds / MatchWithSetupAPI");
+  handle_info::GetMonitorDeviceIds(); // handle_info
+  handle_info::MatchWithSetupAPI();   // handle_info
   DisplayDeviceManager dm;
   dm.Scan();
   DisplayDevice dd = dm.display_devices[0];
