@@ -32,6 +32,7 @@ void DisplayDevice::GetMonitorDetails(LPCWSTR device_name) {
   bool found_active_device = false;
   while (EnumDisplayDevicesW(device_name, device_index, &dd,
                              EDD_GET_DEVICE_INTERFACE_NAME)) {
+    this->device_name = wstringToString(dd.DeviceName);
     this->device_string = wstringToString(dd.DeviceString);
     this->device_id = wstringToString(dd.DeviceID);
     this->device_key = wstringToString(dd.DeviceKey);
@@ -54,6 +55,8 @@ MonitorSwitch::operator<<(std::ostream &os,
                           const MonitorSwitch::DisplayDevice &dd) {
   os << "Display Device: " << dd.device_string << std::endl
      << "\tDevice ID: " << dd.device_id << std::endl
-     << "\tDevice Key: " << dd.device_key << std::endl;
+     << "\tDevice Key: " << dd.device_key << std::endl
+     << "\tDevice Name: " << dd.device_name << std::endl
+     << "\tDevice Handle: " << dd.monitor_handle << std::endl;
   return os;
 }

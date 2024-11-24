@@ -1,10 +1,10 @@
-﻿#include <windows.h>
-#include <physicalmonitorenumerationapi.h>
-#include <highlevelmonitorconfigurationapi.h>
-#include <lowlevelmonitorconfigurationapi.h>
+﻿#include <highlevelmonitorconfigurationapi.h>
 #include <iostream>
-#include <vector>
+#include <lowlevelmonitorconfigurationapi.h>
 #include <memory>
+#include <physicalmonitorenumerationapi.h>
+#include <vector>
+#include <windows.h>
 
 class MonitorHandle {
 private:
@@ -25,15 +25,15 @@ public:
   std::wstring name;
   HANDLE physicalMonitor;
 
-  MonitorInfo(const std::wstring& n, HANDLE h)
-    : name(n), physicalMonitor(h) {}
+  MonitorInfo(const std::wstring &n, HANDLE h) : name(n), physicalMonitor(h) {}
 };
 
 std::vector<MonitorInfo> getPhysicalMonitors() {
   std::vector<MonitorInfo> monitors;
 
-  auto enumMonitors = [](HMONITOR handle, HDC dc, LPRECT rect, LPARAM param) -> BOOL {
-    auto& monitors = *reinterpret_cast<std::vector<MonitorInfo>*>(param);
+  auto enumMonitors = [](HMONITOR handle, HDC dc, LPRECT rect,
+                         LPARAM param) -> BOOL {
+    auto &monitors = *reinterpret_cast<std::vector<MonitorInfo> *>(param);
 
     MONITORINFOEXW monitorInfo{};
     monitorInfo.cbSize = sizeof(MONITORINFOEXW);
@@ -42,27 +42,31 @@ std::vector<MonitorInfo> getPhysicalMonitors() {
     }
 
     DWORD numPhysicalMonitors;
-    if (!GetNumberOfPhysicalMonitorsFromHMONITOR(handle, &numPhysicalMonitors)) {
+    if (!GetNumberOfPhysicalMonitorsFromHMONITOR(handle,
+                                                 &numPhysicalMonitors)) {
       return TRUE;
     }
 
     std::vector<PHYSICAL_MONITOR> physicalMonitors(numPhysicalMonitors);
-    if (!GetPhysicalMonitorsFromHMONITOR(handle, numPhysicalMonitors, physicalMonitors.data())) {
+    if (!GetPhysicalMonitorsFromHMONITOR(handle, numPhysicalMonitors,
+                                         physicalMonitors.data())) {
       return TRUE;
     }
 
-    for (const auto& pm : physicalMonitors) {
-      monitors.emplace_back(pm.szPhysicalMonitorDescription, pm.hPhysicalMonitor);
+    for (const auto &pm : physicalMonitors) {
+      monitors.emplace_back(pm.szPhysicalMonitorDescription,
+                            pm.hPhysicalMonitor);
     }
 
     return TRUE;
   };
 
-  EnumDisplayMonitors(nullptr, nullptr, enumMonitors, reinterpret_cast<LPARAM>(&monitors));
+  EnumDisplayMonitors(nullptr, nullptr, enumMonitors,
+                      reinterpret_cast<LPARAM>(&monitors));
   return monitors;
 }
 
-void getVCPFeatures(const MonitorInfo& monitor) {
+void getVCPFeatures(const MonitorInfo &monitor) {
   std::wcout << L"Monitor: " << monitor.name << std::endl;
 
   // Common VCP codes to check
@@ -83,16 +87,11 @@ void getVCPFeatures(const MonitorInfo& monitor) {
     DWORD currentValue = 0;
     DWORD maximumValue = 0;
 
-    if (GetVCPFeatureAndVCPFeatureReply(
-                                        monitor.physicalMonitor,
-                                        code,
-                                        nullptr,
-                                        &currentValue,
-                                        &maximumValue
-                                        )) {
+    if (GetVCPFeatureAndVCPFeatureReply(monitor.physicalMonitor, code, nullptr,
+                                        &currentValue, &maximumValue)) {
       std::wcout << L"VCP Code 0x" << std::hex << static_cast<int>(code)
-                 << L": Current=" << std::dec << currentValue
-                 << L", Maximum=" << maximumValue << std::endl;
+                 << L": Current=" << std::dec << currentValue << L", Maximum="
+                 << maximumValue << std::endl;
     }
   }
   std::wcout << L"-------------------" << std::endl;
@@ -106,7 +105,7 @@ int vcpmain() {
     return 1;
   }
 
-  for (const auto& monitor : monitors) {
+  for (const auto &monitor : monitors) {
     getVCPFeatures(monitor);
   }
 

@@ -1,6 +1,9 @@
 ﻿#include "DisplayDeviceManager.h"
 #include "DisplayDevice.h"
 #include <iostream>
+#include <codecvt>
+#include <locale>
+#include <string>
 
 using namespace MonitorSwitch;
 
@@ -24,6 +27,14 @@ BOOL CALLBACK DisplayDeviceManager::MonitorEnumProc(HMONITOR hMonitor,
     display_devices.push_back(dd);
   }
   return TRUE;
+}
+
+void DisplayDeviceManager::RefreshHandles() {
+  // std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+  // std::wstring wstr = converter.from_bytes(device_id);
+
+
+  return;
 }
 
 DisplayDevice *DisplayDeviceManager::GetDisplayDevice(std::wstring device_id) {

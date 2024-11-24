@@ -13,6 +13,7 @@ namespace MonitorSwitch {
                   std::string device_string);
 
     HMONITOR monitor_handle;
+    std::string device_name;
     std::string device_string;
     std::string device_id;
     std::string device_key;
