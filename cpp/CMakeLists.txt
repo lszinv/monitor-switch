@@ -30,6 +30,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(DEBUG)
+  endif()
+
 include_directories(
   include
   third_party/include
@@ -39,6 +44,7 @@ set(SOURCES
   src/ConfigManager.cpp
   src/DisplayDevice.cpp
   src/DisplayDeviceManager.cpp
+  src/DisplayDeviceId.cpp
   src/main.cpp
 )
 

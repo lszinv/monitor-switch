@@ -1,7 +1,10 @@
 ﻿#include "DisplayDevice.h"
+#include "DisplayDeviceId.h"
 #include "spdlog/spdlog.h"
 #include <codecvt>
 #include <iostream>
+#include <sstream>
+#include <vector>
 #include <locale>
 #include <string>
 
@@ -13,9 +16,17 @@ std::string DisplayDevice::wstringToString(const std::wstring &wstr) {
 }
 
 DisplayDevice::DisplayDevice(HMONITOR monitor, std::wstring device_name) {
-  this->monitor_handle = monitor;
+  this->handle = monitor;
   this->GetMonitorDetails(device_name.c_str());
   return;
+}
+
+DisplayDevice::DisplayDevice(const DisplayDevice& other) {
+  this->handle = other.GetHandle();
+  this->device_name = other.GetName();
+  this->device_string = other.GetString();
+  this->device_key = other.GetKey();
+  this->device_id = other.device_id;
 }
 
 void DisplayDevice::SetInputs(std::map<int, std::string> &&inputs) {
@@ -30,33 +41,72 @@ void DisplayDevice::GetMonitorDetails(LPCWSTR device_name) {
   DISPLAY_DEVICEW dd = {sizeof(dd)};
   DWORD device_index = 0;
   bool found_active_device = false;
+  std::string full_id = "";
   while (EnumDisplayDevicesW(device_name, device_index, &dd,
                              EDD_GET_DEVICE_INTERFACE_NAME)) {
     this->device_name = wstringToString(dd.DeviceName);
     this->device_string = wstringToString(dd.DeviceString);
-    this->device_id = wstringToString(dd.DeviceID);
+    full_id = wstringToString(dd.DeviceID);
     this->device_key = wstringToString(dd.DeviceKey);
     device_index++;
     // If there are multiple displays to this physical device,
     // keep cycling until the active one is found
     if (dd.StateFlags & DISPLAY_DEVICE_ACTIVE) {
-      this->device_id = wstringToString(dd.DeviceID);
+      full_id = wstringToString(dd.DeviceID);
       found_active_device = true;
       break;
     }
   }
+
+  if (full_id == "") return;
+
+  this->device_id = std::make_shared<DisplayDeviceId>(full_id);
   if (!found_active_device) {
     spdlog::error("No active device founds for " + wstringToString(device_name));
   }
 }
 
+const std::string MonitorSwitch::DisplayDevice::GetName() const {
+  return this->device_name;
+}
+
+const std::string MonitorSwitch::DisplayDevice::GetString() const {
+  return this->device_string;
+}
+
+const std::string MonitorSwitch::DisplayDevice::GetKey() const {
+  return this->device_string;
+}
+
+const std::string MonitorSwitch::DisplayDevice::GetProductCode() const {
+  return this->device_id->GetVendorProductCode();
+}
+
+const std::string MonitorSwitch::DisplayDevice::GetUId() const {
+  return this->device_id->GetUID();
+}
+
+const std::string MonitorSwitch::DisplayDevice::GetFullId() const {
+  return this->device_id->GetFullIdString();
+}
+
+const HMONITOR MonitorSwitch::DisplayDevice::GetHandle() const { return this->handle; }
+
+void MonitorSwitch::DisplayDevice::SetHandle(HMONITOR handle) {
+  this->handle = handle;
+}
+
 std::ostream &
 MonitorSwitch::operator<<(std::ostream &os,
                           const MonitorSwitch::DisplayDevice &dd) {
-  os << "Display Device: " << dd.device_string << std::endl
-     << "\tDevice ID: " << dd.device_id << std::endl
-     << "\tDevice Key: " << dd.device_key << std::endl
-     << "\tDevice Name: " << dd.device_name << std::endl
-     << "\tDevice Handle: " << dd.monitor_handle << std::endl;
+  os << "Display Device: " << dd.GetString() << std::endl
+  //<< "\tDevice Full ID: " << dd.device_full_id << std::endl
+  << "\tDevice Key: " << dd.GetKey() << std::endl
+  << "\tDevice Name: " << dd.GetName() << std::endl
+  << "\tDevice UId: " << dd.GetUId() << std::endl
+  << "\tDevice Product Code: " << dd.GetProductCode() << std::endl
+  << "\tDevice Full Id: " << dd.GetFullId() << std::endl
+  << "\tDevice Handle: " << dd.GetHandle() << std::endl;
+
   return os;
 }

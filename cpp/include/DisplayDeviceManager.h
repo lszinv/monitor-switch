@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "DisplayDevice.h"
+#include "DisplayDeviceId.h"
 #include <vector>
 #include <windef.h>
 #include <windows.h>
@@ -9,10 +10,6 @@ namespace MonitorSwitch {
 class DisplayDeviceManager {
 public:
   static std::vector<DisplayDevice> display_devices;
-  static std::map<
-                  std::string /* Device ID */,
-                  DisplayDevice> display_device_map;
-
 
   DisplayDeviceManager();
 
@@ -23,15 +20,18 @@ public:
   */
   void Scan();
 
-  void RefreshHandles();
+  void ResetHandles();
 
-  DisplayDevice *GetDisplayDevice(std::wstring device_id);
+  DisplayDevice *GetDisplayDevice(DeviceUId device_id);
+
+  const std::map<DeviceUId, DisplayDevice>& GetDevices() const;
 
 private:
-  // Win Call
+
   static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor,
                                        LPRECT lprcMonitor, LPARAM dwData);
 
-  void updateDevices(DisplayDevice);
+  std::map<DeviceUId, DisplayDevice> devices;
+  void UpdateDevice(DisplayDevice&& device);
 };
 } // namespace MonitorSwitch

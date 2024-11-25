@@ -20,17 +20,17 @@ void ConfigManager::SaveConfig(DisplayDeviceManager display_device_manager, std:
   Value displays(kArrayType);
 
   for (DisplayDevice dd : display_device_manager.display_devices) {
-    Value display_device(kObjectType);
-    Value device_string;
-    device_string.SetString(dd.device_string.c_str(), allocator);
-    display_device.AddMember("device_string", device_string, allocator);
-    Value device_id;
-    device_id.SetString(dd.device_id.c_str(), allocator);
-    display_device.AddMember("device_id", device_id, allocator);
-    Value device_key;
-    device_key.SetString(dd.device_key.c_str(), allocator);
-    display_device.AddMember("device_key", device_key, allocator);
-    displays.PushBack(display_device, allocator);
+    // Value display_device(kObjectType);
+    // Value device_string;
+    // device_string.SetString(dd.device_string.c_str(), allocator);
+    // display_device.AddMember("device_string", device_string, allocator);
+    // Value device_full_id;
+    // device_full_id.SetString(dd.device_full_id.c_str(), allocator);
+    // display_device.AddMember("device_full_id", device_full_id, allocator);
+    // Value device_key;
+    // device_key.SetString(dd.device_key.c_str(), allocator);
+    // display_device.AddMember("device_key", device_key, allocator);
+    // displays.PushBack(display_device, allocator);
   }
 
   d.AddMember("displays", displays, allocator);
