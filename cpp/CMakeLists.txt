@@ -45,6 +45,7 @@ set(SOURCES
   src/DisplayDevice.cpp
   src/DisplayDeviceManager.cpp
   src/DisplayDeviceId.cpp
+  src/mccs/2.2a/InputSource.cpp
   src/main.cpp
 )
 
