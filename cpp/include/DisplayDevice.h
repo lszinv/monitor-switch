@@ -39,6 +39,7 @@ namespace MonitorSwitch {
 
     void GetMonitorDetails(LPCWSTR device_name);
     void ParseId(std::string id);
+    void LoadInputs();
     std::string wstringToString(const std::wstring& wstr);
   };
 

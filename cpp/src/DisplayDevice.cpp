@@ -3,10 +3,18 @@
 #include "spdlog/spdlog.h"
 #include <codecvt>
 #include <iostream>
-#include <sstream>
-#include <vector>
 #include <locale>
+#include <sstream>
 #include <string>
+#include <vector>
+#include <lowlevelmonitorconfigurationapi.h>
+
+// For some reason this function is missing from mingw32's
+// highlevelmonitorconfigurationapi.h, so we're declaring it here.
+extern "C" {
+BOOL GetCapabilitiesStringLength(
+    HANDLE hMonitor, LPDWORD pdwCapabilitiesStringLengthInCharacters);
+}
 
 using namespace MonitorSwitch;
 
@@ -18,10 +26,11 @@ std::string DisplayDevice::wstringToString(const std::wstring &wstr) {
 DisplayDevice::DisplayDevice(HMONITOR monitor, std::wstring device_name) {
   this->handle = monitor;
   this->GetMonitorDetails(device_name.c_str());
+  this->LoadInputs();
   return;
 }
 
-DisplayDevice::DisplayDevice(const DisplayDevice& other) {
+DisplayDevice::DisplayDevice(const DisplayDevice &other) {
   this->handle = other.GetHandle();
   this->device_name = other.GetName();
   this->device_string = other.GetString();
@@ -58,11 +67,13 @@ void DisplayDevice::GetMonitorDetails(LPCWSTR device_name) {
     }
   }
 
-  if (full_id == "") return;
+  if (full_id == "")
+    return;
 
   this->device_id = std::make_shared<DisplayDeviceId>(full_id);
   if (!found_active_device) {
-    spdlog::error("No active device founds for " + wstringToString(device_name));
+    spdlog::error("No active device founds for " +
+                  wstringToString(device_name));
   }
 }
 
@@ -90,23 +101,39 @@ const std::string MonitorSwitch::DisplayDevice::GetFullId() const {
   return this->device_id->GetFullIdString();
 }
 
-const HMONITOR MonitorSwitch::DisplayDevice::GetHandle() const { return this->handle; }
+const HMONITOR MonitorSwitch::DisplayDevice::GetHandle() const {
+  return this->handle;
+}
 
 void MonitorSwitch::DisplayDevice::SetHandle(HMONITOR handle) {
   this->handle = handle;
 }
 
+void MonitorSwitch::DisplayDevice::LoadInputs() {
+  DWORD currentValue = 0, maxValue = 0;
+
+  if (GetVCPFeatureAndVCPFeatureReply(this->handle, 0x60, NULL, &currentValue,
+                                      &maxValue)) {
+    std::cout << "Current Input Source: " << currentValue << std::endl;
+    std::cout << "Maximum Supported Input Source Value: " << maxValue
+              << std::endl;
+  } else {
+    std::cerr << "Failed to get VCP feature reply for 0x60" << std::endl;
+  }
+}
+
 std::ostream &
 MonitorSwitch::operator<<(std::ostream &os,
                           const MonitorSwitch::DisplayDevice &dd) {
-  os << "Display Device: " << dd.GetString() << std::endl
-  //<< "\tDevice Full ID: " << dd.device_full_id << std::endl
-  << "\tDevice Key: " << dd.GetKey() << std::endl
-  << "\tDevice Name: " << dd.GetName() << std::endl
-  << "\tDevice UId: " << dd.GetUId() << std::endl
-  << "\tDevice Product Code: " << dd.GetProductCode() << std::endl
-  << "\tDevice Full Id: " << dd.GetFullId() << std::endl
-  << "\tDevice Handle: " << dd.GetHandle() << std::endl;
+  os << "Display Device: " << dd.GetString()
+     << std::endl
+     //<< "\tDevice Full ID: " << dd.device_full_id << std::endl
+     << "\tDevice Key: " << dd.GetKey() << std::endl
+     << "\tDevice Name: " << dd.GetName() << std::endl
+     << "\tDevice UId: " << dd.GetUId() << std::endl
+     << "\tDevice Product Code: " << dd.GetProductCode() << std::endl
+     << "\tDevice Full Id: " << dd.GetFullId() << std::endl
+     << "\tDevice Handle: " << dd.GetHandle() << std::endl;
 
   return os;
 }
