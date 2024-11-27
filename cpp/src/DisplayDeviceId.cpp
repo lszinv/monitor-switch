@@ -10,7 +10,6 @@ DisplayDeviceId::DisplayDeviceId(std::string id) {
   std::vector<std::string> result;
   std::istringstream stream(id);
   std::string token;
-  spdlog::info("PARSE ID");
   while (std::getline(stream, token, '#')) {
     result.push_back(token);
   }

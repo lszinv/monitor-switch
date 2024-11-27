@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <iostream>
 #include "DisplayDeviceId.h"
+#include <PhysicalMonitorEnumerationAPI.h>
+#include <vector>
 
 namespace MonitorSwitch {
 
@@ -37,9 +39,14 @@ namespace MonitorSwitch {
     std::string device_key;
     std::shared_ptr<DisplayDeviceId> device_id;
 
+
     void GetMonitorDetails(LPCWSTR device_name);
     void ParseId(std::string id);
     void LoadInputs();
+    std::vector<PHYSICAL_MONITOR> GetPhysicalMonitors() const;
+    std::string GetCapabilitiesString() const;
+    void ParseCapabilitiesString(std::string);
+
     std::string wstringToString(const std::wstring& wstr);
   };
 
