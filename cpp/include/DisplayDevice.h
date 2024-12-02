@@ -1,12 +1,14 @@
 #pragma once
+#include "DisplayDeviceId.h"
+#include "mccs/base/InputSource.h"
+#include <PhysicalMonitorEnumerationAPI.h>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
-#include <windows.h>
-#include <iostream>
-#include "DisplayDeviceId.h"
-#include <PhysicalMonitorEnumerationAPI.h>
 #include <vector>
+#include <windows.h>
 
 namespace MonitorSwitch {
 
@@ -16,8 +18,7 @@ namespace MonitorSwitch {
     DisplayDevice(HMONITOR monitor, std::wstring device_name);
     DisplayDevice(const DisplayDevice& other);
 
-    void SetInputs(std::map<int, std::string> &&);
-    void SetCurrentInput(std::pair<int, std::string>);
+    ~DisplayDevice();
 
     void SetHandle(HMONITOR handle);
     const HMONITOR GetHandle() const;
@@ -27,25 +28,29 @@ namespace MonitorSwitch {
     const std::string GetProductCode() const;
     const std::string GetUId() const;
     const std::string GetFullId() const;
+    const std::string GetModelName() const;
+    void ChangeInput(InputType input) const;
+    void ChangeInput(int input) const;
+    InputType GetCurrentInput() const;
 
 
   private:
-    // TODO: typedef these
-    std::map<int /* Code */, std::string /* Input Label  */> inputs;
-    std::pair<int /* Code */, std::string /* Inputn Label */> current_input;
+    std::set<InputType> inputs;
+    InputType current_input;
     HMONITOR handle;
     std::string device_name;
     std::string device_string;
     std::string device_key;
+    std::string model_name;
     std::shared_ptr<DisplayDeviceId> device_id;
-
 
     void GetMonitorDetails(LPCWSTR device_name);
     void ParseId(std::string id);
-    void LoadInputs();
     std::vector<PHYSICAL_MONITOR> GetPhysicalMonitors() const;
-    std::string GetCapabilitiesString() const;
+    std::string GetCapabilitiesString();
     void ParseCapabilitiesString(std::string);
+    void ParseInputs(std::string);
+    void CleanUpPhysicalMonitors(std::vector<PHYSICAL_MONITOR>&& physical_monitors) const;
 
     std::string wstringToString(const std::wstring& wstr);
   };

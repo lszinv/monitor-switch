@@ -13,6 +13,7 @@
 #include <iostream>
 #include "spdlog/spdlog.h"
 
+#include "mccs/base/InputSource.h"
 using namespace MonitorSwitch;
 using namespace rapidjson;
 
@@ -31,11 +32,17 @@ int main(int argc, char *argv[]) {
 
   DisplayDeviceManager dm;
   dm.Scan();
+  spdlog::debug("Scan complete");
   spdlog::info(dm.GetDevices().size());
-  for (const auto& [key, dd] : dm.GetDevices()) {
+  for (auto& [key, dd] : dm.GetDevices()) {
     std::cout << dd << std::endl;
+    if (dd.GetModelName() == "LCDVG289") {
+      std::cout << "??????" << std::endl;
+      dd.ChangeInput(InputType::HDMI_1);
+    }
   }
 
+  std::cout << InputTypeToString.size() << std::endl;
   // ConfigManager cm;
   // cm.SaveConfig(dm, "monitors.json");
   return 0;
