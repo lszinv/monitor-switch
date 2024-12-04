@@ -11,6 +11,15 @@
 using namespace MonitorSwitch;
 
 std::vector<DisplayDevice> DisplayDeviceManager::display_devices = {};
+std::shared_ptr<DisplayDeviceManager> DisplayDeviceManager::cached = nullptr;
+
+std::shared_ptr<DisplayDeviceManager> DisplayDeviceManager::GetDisplayDeviceManager() {
+  if (cached) {
+    return cached;
+  }
+  DisplayDeviceManager::cached = std::make_shared<DisplayDeviceManager>();
+  return DisplayDeviceManager::cached;
+}
 
 DisplayDeviceManager::DisplayDeviceManager() {
   this->devices = {};
@@ -72,4 +81,17 @@ DisplayDevice *DisplayDeviceManager::GetDisplayDevice(DeviceUId device_id) {
 
 const std::map<DeviceUId, DisplayDevice>& DisplayDeviceManager::GetDevices() const {
   return this->devices;
+}
+
+void DisplayDeviceManager::ChangeDisplayInput(std::string device_id, InputType input) {
+  // find device
+  if (this->devices.find(device_id) == this->devices.end()) {
+    // scan and try again
+    return; // for now
+  }
+
+  // scan and retry if handle fails
+  DisplayDevice device = this->devices[device_id];
+  device.ChangeInput(input);
+  return;
 }

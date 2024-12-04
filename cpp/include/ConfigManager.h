@@ -9,7 +9,6 @@ namespace MonitorSwitch {
   public:
     ConfigManager();
     void SaveConfig(DisplayDeviceManager, std::string);
-    DisplayDeviceManager LoadConfig(std::string);
   private:
   };
 }

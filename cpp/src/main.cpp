@@ -30,19 +30,21 @@ int main(int argc, char *argv[]) {
   // handle_info::GetMonitorDeviceIds(); // handle_info
   // handle_info::MatchWithSetupAPI();   // handle_info
 
-  DisplayDeviceManager dm;
-  dm.Scan();
+  std::shared_ptr<DisplayDeviceManager> dm = DisplayDeviceManager::GetDisplayDeviceManager();
+
+  dm->Scan();
   spdlog::debug("Scan complete");
-  spdlog::info(dm.GetDevices().size());
-  for (auto& [key, dd] : dm.GetDevices()) {
-    std::cout << dd << std::endl;
-    if (dd.GetModelName() == "LCDVG289") {
-      std::cout << "??????" << std::endl;
-      dd.ChangeInput(InputType::HDMI_1);
-    }
+  spdlog::info(dm->GetDevices().size());
+
+  for (auto& [key, dd] : dm->GetDevices()) {
+    std::cout << key << ": " << dd << std::endl;
+  //   if (dd.GetModelName() == "LCDVG289") {
+  //     std::cout << "??????" << std::endl;
+  //     dd.ChangeInput(InputType::HDMI_1);
+  //   }
   }
 
-  std::cout << InputTypeToString.size() << std::endl;
+  dm->ChangeDisplayInput("5&7a84079&0&UID45318", InputType::HDMI_1);
   // ConfigManager cm;
   // cm.SaveConfig(dm, "monitors.json");
   return 0;

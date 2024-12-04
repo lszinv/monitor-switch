@@ -225,6 +225,22 @@ void DisplayDevice::CleanUpPhysicalMonitors(std::vector<PHYSICAL_MONITOR>&& phys
   }
 }
 
+const std::vector<std::string> DisplayDevice::GetInputs() const {
+  std::vector<std::string> result;
+  for (const auto& input : inputs) {
+    result.push_back(InputTypeToString.at(input));
+  }
+  return result;
+}
+
+const std::string DisplayDevice::GetInputString() const{
+  std::stringstream ss;
+  for (const auto& input : this->inputs) {
+    ss << (InputTypeToString.at(input)) << " ";
+  }
+  return ss.str();
+}
+
 std::ostream &
 MonitorSwitch::operator<<(std::ostream &os,
                           const MonitorSwitch::DisplayDevice &dd) {
@@ -236,6 +252,7 @@ MonitorSwitch::operator<<(std::ostream &os,
      << "\tDevice UId: " << dd.GetUId() << std::endl
      << "\tDevice Product Code: " << dd.GetProductCode() << std::endl
      << "\tDevice Full Id: " << dd.GetFullId() << std::endl
+     << "\tDevice Inputs: " << dd.GetInputString() << std::endl
      << "\tDevice Handle: " << dd.GetHandle() << std::endl;
 
   return os;

@@ -29,6 +29,8 @@ namespace MonitorSwitch {
     const std::string GetUId() const;
     const std::string GetFullId() const;
     const std::string GetModelName() const;
+    const std::string GetInputString() const;
+    const std::vector<std::string> GetInputs() const;
     void ChangeInput(InputType input) const;
     void ChangeInput(int input) const;
     InputType GetCurrentInput() const;

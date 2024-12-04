@@ -48,8 +48,3 @@ void ConfigManager::SaveConfig(DisplayDeviceManager display_device_manager, std:
     }
 
 }
-
-DisplayDeviceManager LoadConfig(std::string path) {
-  DisplayDeviceManager dm;
-  return dm;
-}
